@@ -1,7 +1,7 @@
 {
   "name": "quick-note-popup",
   "version": "1.0.0",
-  "description": "A tool for quick opening recent workspaces on vscode",
+  "description": "A tool for quick opening a simple list of notes, where you can type a new note and save it.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
