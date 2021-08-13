@@ -1,5 +1,5 @@
 const { globalShortcut, screen } = require('electron');
-const { shortcutHandler } = require('./shortcutHandler');
+const { shortcutFileHandler: shortcutHandler } = require('./shortcutFileHandler');
 
 const { getCursorScreenPoint, getDisplayNearestPoint } = screen;
 

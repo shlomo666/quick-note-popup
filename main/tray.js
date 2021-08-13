@@ -1,6 +1,6 @@
 const { Tray, Menu, app } = require('electron');
 const path = require('path');
-const { shortcutHandler } = require('./shortcutHandler');
+const { shortcutFileHandler: shortcutHandler } = require('./shortcutFileHandler');
 
 const appDir = path.dirname(require.main.filename);
 const package = require(appDir + '/package.json');

@@ -1,26 +1,60 @@
-const { EOL } = require('os');
-const { FileHandler } = require('../common/FileHandler');
+const { noteElementsHandler } = require('./elements');
+const { notesFileHandler } = require('./notesFileHandler');
+const { currentNoteHandler } = require('./currentNoteHandler');
 
-const notesFilePath = `${__dirname}/store/notes.txt`;
+class NotesHandler {
+  init() {
+    this.__setHTML();
+  }
 
-class NotesHandler extends FileHandler {
   getNotes() {
-    return this.getValue();
+    return notesFileHandler.getNotes();
   }
 
-  getValue() {
-    return super
-      .getValue()
-      .split(EOL)
-      .filter((note) => note.trim());
+  setNotes(notes) {
+    notesFileHandler.setNotes(notes);
+
+    this.__setHTML();
   }
 
-  appendNote(note) {
-    this.setValue([...this.getValue(), note]);
+  addNote() {
+    const note = currentNoteHandler.getValue();
+    if (note.length === 0) {
+      return;
+    }
+
+    const newNotes = [...this.getNotes(), note];
+    this.setNotes(newNotes);
+    currentNoteHandler.resetNote();
   }
 
-  __setValue(notes) {
-    super.__setValue(notes.join(EOL));
+  removeNote() {
+    if (noteElementsHandler.selectionActive) {
+      const { index } = noteElementsHandler;
+      const newNotes = this.getNotes().filter((_note, i) => i !== index);
+      this.setNotes(newNotes);
+    }
+  }
+
+  up() {
+    noteElementsHandler.up();
+  }
+
+  down() {
+    noteElementsHandler.down();
+  }
+
+  resetEditState() {
+    noteElementsHandler.resetEditState();
+  }
+
+  isEditing() {
+    return currentNoteHandler.isEditing();
+  }
+
+  __setHTML() {
+    noteElementsHandler.setNoteElements(this.getNotes());
   }
 }
-exports.notesHandler = new NotesHandler(notesFilePath);
+
+exports.notesHandler = new NotesHandler();

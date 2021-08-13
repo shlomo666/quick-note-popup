@@ -9,8 +9,7 @@ class FileHandler {
   }
 
   getValue() {
-    const buf = readFileSync(this.filePath);
-    return buf.toString();
+    return this.__getValue();
   }
 
   setValue(newValue) {
@@ -19,8 +18,21 @@ class FileHandler {
     this.onValueChanged({ oldValue, value: newValue });
   }
 
+  serializeValue(value) {
+    return value;
+  }
+
+  deserializeValue(value) {
+    return value;
+  }
+
+  __getValue() {
+    const buf = readFileSync(this.filePath);
+    return this.deserializeValue(buf.toString());
+  }
+
   __setValue(newValue) {
-    writeFileSync(this.filePath, newValue);
+    writeFileSync(this.filePath, this.serializeValue(newValue));
   }
 }
 

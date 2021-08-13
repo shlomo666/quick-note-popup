@@ -43,6 +43,11 @@ class NoteElementsHandler {
   get selectionActive() {
     return this.index > -1;
   }
+
+  resetEditState() {
+    this.index = -1;
+    this.setHTML();
+  }
 }
 
 exports.noteElementsHandler = new NoteElementsHandler();

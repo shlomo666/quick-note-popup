@@ -4,4 +4,4 @@ const appDir = path.dirname(require.main.filename);
 
 const shortcutFilePath = `${appDir}/main/store/shortcut.txt`;
 
-exports.shortcutHandler = new FileHandler(shortcutFilePath);
+exports.shortcutFileHandler = new FileHandler(shortcutFilePath);
