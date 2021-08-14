@@ -9,11 +9,11 @@ class CurrentNoteHandler {
     this.enforceFocus();
   }
 
-  addEventListener(event, fn) {
-    this.note.addEventListener(event, fn);
+  addEventListener(event, action) {
+    this.note.addEventListener(event, action);
   }
 
-  getValue() {
+  get value() {
     return this.note.value;
   }
 
@@ -25,7 +25,7 @@ class CurrentNoteHandler {
     this.note.value = '';
   }
 
-  isEditing() {
+  get isEditing() {
     return this.note.value !== '';
   }
 

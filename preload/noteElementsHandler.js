@@ -1,52 +1,55 @@
 const clamp = require('lodash.clamp');
 
+const LIST_ELEMENT_ID = 'listElement';
+
 class NoteElementsHandler {
   constructor() {
     this.texts = [];
     this.index = -1;
   }
 
-  /**
-   * @param {string[]} texts
-   */
+  /** @param {string[]} texts */
   setNoteElements(texts) {
     this.texts = texts;
     this.index = clamp(this.index, -1, this.texts.length - 1);
-    this.setHTML();
+    this.__setHTML();
   }
 
-  setHTML() {
-    replaceHTML({ selector: 'results', text: this.getUnorderedList(this.texts) });
+  __setHTML() {
+    replaceHTML({ selector: LIST_ELEMENT_ID, text: this.__getUnorderedList(this.texts) });
   }
 
-  /**
-   * @param {string[]} texts
-   */
-  getUnorderedList(texts) {
-    return ul(texts.map((text, i) => li(span(text, `font-size: 30px; color: ${this.getNoteColor(i)}`))).join('\n'));
+  /** @param {string[]} texts */
+  __getUnorderedList(texts) {
+    return ul(texts.map((text, i) => li(span(text, `font-size: 30px; color: ${this.__getNoteColor(i)}`))).join('\n'));
   }
 
-  getNoteColor(index) {
+  /** @param {number} index */
+  __getNoteColor(index) {
     return index === this.index ? 'cornflowerblue' : 'white';
   }
 
   down() {
     this.index = clamp(this.index + 1, -1, this.texts.length - 1);
-    this.setHTML();
+    this.__setHTML();
   }
 
   up() {
     this.index = clamp(this.index - 1, -1, this.texts.length - 1);
-    this.setHTML();
+    this.__setHTML();
   }
 
   get selectionActive() {
     return this.index > -1;
   }
 
+  get selectedIndex() {
+    return this.index;
+  }
+
   resetEditState() {
     this.index = -1;
-    this.setHTML();
+    this.__setHTML();
   }
 }
 

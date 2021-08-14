@@ -1,31 +1,28 @@
-const { ipcRenderer } = require('electron');
 const { notesHandler } = require('./notesHandler');
-const { currentNoteHandler } = require('./currentNoteHandler');
+const { stateHandler } = require('./stateHandler');
 
 function setupEventListeners() {
   const keyUpEventsMap = {
     Enter: () => {
-      if (notesHandler.isEditing()) {
+      if (stateHandler.isEditing) {
         notesHandler.addNote();
       } else {
-        hide();
+        stateHandler.hide();
       }
     },
-    Escape: () => {
-      hide();
-    },
+    Escape: () => stateHandler.hide(),
     Backspace: () => notesHandler.removeNote()
   };
   const keyDownEventsMap = {
-    ArrowUp: () => notesHandler.up(),
-    ArrowDown: () => notesHandler.down()
+    ArrowUp: () => stateHandler.up(),
+    ArrowDown: () => stateHandler.down()
   };
 
   [
     ['keyup', keyUpEventsMap],
     ['keydown', keyDownEventsMap]
   ].map(([event, map]) => {
-    currentNoteHandler.addEventListener(event, (event) => {
+    stateHandler.setupEvent(event, (event) => {
       const { key } = event;
 
       const listener = map[key];
@@ -37,8 +34,3 @@ function setupEventListeners() {
 }
 
 exports.setupEventListeners = setupEventListeners;
-function hide() {
-  currentNoteHandler.resetEditState();
-  notesHandler.resetEditState();
-  ipcRenderer.send('hide');
-}

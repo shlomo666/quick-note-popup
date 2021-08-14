@@ -1,12 +1,7 @@
-const { noteElementsHandler } = require('./elements');
 const { notesFileHandler } = require('./notesFileHandler');
-const { currentNoteHandler } = require('./currentNoteHandler');
+const { stateHandler } = require('./stateHandler');
 
 class NotesHandler {
-  init() {
-    this.__setHTML();
-  }
-
   getNotes() {
     return notesFileHandler.getNotes();
   }
@@ -14,46 +9,26 @@ class NotesHandler {
   setNotes(notes) {
     notesFileHandler.setNotes(notes);
 
-    this.__setHTML();
+    stateHandler.setList(notes);
   }
 
   addNote() {
-    const note = currentNoteHandler.getValue();
-    if (note.length === 0) {
+    if (!stateHandler.isEditing) {
       return;
     }
+    const note = stateHandler.currentNote;
 
     const newNotes = [...this.getNotes(), note];
     this.setNotes(newNotes);
-    currentNoteHandler.resetNote();
+    stateHandler.resetNote();
   }
 
   removeNote() {
-    if (noteElementsHandler.selectionActive) {
-      const { index } = noteElementsHandler;
+    if (stateHandler.selectionActive) {
+      const index = stateHandler.selectedIndex;
       const newNotes = this.getNotes().filter((_note, i) => i !== index);
       this.setNotes(newNotes);
     }
-  }
-
-  up() {
-    noteElementsHandler.up();
-  }
-
-  down() {
-    noteElementsHandler.down();
-  }
-
-  resetEditState() {
-    noteElementsHandler.resetEditState();
-  }
-
-  isEditing() {
-    return currentNoteHandler.isEditing();
-  }
-
-  __setHTML() {
-    noteElementsHandler.setNoteElements(this.getNotes());
   }
 }
 
