@@ -23,6 +23,7 @@
       }
     ],
     "object-shorthand": ["error", "always", { "avoidQuotes": true }],
+    "no-unused-expressions": ["error"],
     "import/order": [
       "error",
       {
