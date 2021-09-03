@@ -1,6 +1,5 @@
 const clamp = require('lodash.clamp');
-
-const LIST_ELEMENT_ID = 'listElement';
+const { scroll, listElementId, selectedItemColor, itemColor } = require('./consts');
 
 class NoteElementsHandler {
   constructor() {
@@ -16,7 +15,7 @@ class NoteElementsHandler {
   }
 
   __setHTML() {
-    replaceHTML({ selector: LIST_ELEMENT_ID, text: this.__getUnorderedList(this.texts) });
+    replaceHTML({ selector: listElementId, text: this.__getUnorderedList(this.texts) });
   }
 
   /** @param {string[]} texts */
@@ -26,17 +25,34 @@ class NoteElementsHandler {
 
   /** @param {number} index */
   __getNoteColor(index) {
-    return index === this.index ? 'cornflowerblue' : 'white';
+    return index === this.index ? selectedItemColor : itemColor;
   }
 
   down() {
     this.index = clamp(this.index + 1, -1, this.texts.length - 1);
     this.__setHTML();
+    this.__scrollToSelected();
   }
 
   up() {
     this.index = clamp(this.index - 1, -1, this.texts.length - 1);
     this.__setHTML();
+    this.__scrollToSelected();
+  }
+
+  __scrollToSelected() {
+    const { selectedItemSurroundingLines } = scroll;
+
+    const ul = document.querySelector('ul');
+
+    const indexOfElementToBeVisible = this.index - selectedItemSurroundingLines;
+    const min = 0;
+    const indexOfElementToScrollTo = Math.max(indexOfElementToBeVisible, min);
+
+    const elementToScrollTo = ul.children[indexOfElementToScrollTo];
+    if (elementToScrollTo) {
+      elementToScrollTo.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   get selectionActive() {

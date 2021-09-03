@@ -78,6 +78,17 @@
           min-height: 100vh;
           font-size: 1.5rem;
           background-color: rgb(77, 32, 111);
+
+          overflow: hidden;
+        }
+
+        .listElement {
+          color: white;
+          max-height: 70vh;
+          overflow: scroll;
+          display: flex;
+          justify-content: center;
+          margin-top: 5vh;
         }
       </style>
     </head>
@@ -87,9 +98,10 @@
     <div class="form__group field">
       <input type="input" class="form__field" placeholder="Quick Note" name="note" id="note" required />
       <label for="note" class="form__label">Quick Note</label>
+
+      <div class="listElement"" id="listElement"></div>
     </div>
 
-    <div style="color: white" id="listElement"></div>
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
   </body>
