@@ -15,20 +15,24 @@ function setupEventListeners() {
   };
   const keyDownEventsMap = {
     ArrowUp: () => stateHandler.up(),
-    ArrowDown: () => stateHandler.down()
+    ArrowDown: () => stateHandler.down(),
+    /** @param {KeyboardEvent} event */
+    Backspace: (event) => {
+      if (stateHandler.selectionActive) {
+        event.preventDefault();
+      }
+    }
   };
 
   [
     ['keyup', keyUpEventsMap],
     ['keydown', keyDownEventsMap]
-  ].map(([event, map]) => {
+  ].forEach(([event, map]) => {
     stateHandler.setupEvent(event, (event) => {
       const { key } = event;
 
       const listener = map[key];
-      if (listener) {
-        listener();
-      }
+      listener?.(event);
     });
   });
 }
