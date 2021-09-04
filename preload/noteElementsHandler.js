@@ -31,27 +31,29 @@ class NoteElementsHandler {
   down() {
     this.index = clamp(this.index + 1, -1, this.texts.length - 1);
     this.__setHTML();
-    this.__scrollToSelected();
+
+    const { selectedItemSurroundingLines } = scroll;
+    this.__scrollToSelected(selectedItemSurroundingLines);
   }
 
   up() {
     this.index = clamp(this.index - 1, -1, this.texts.length - 1);
     this.__setHTML();
-    this.__scrollToSelected();
+
+    const { selectedItemSurroundingLines } = scroll;
+    this.__scrollToSelected(-selectedItemSurroundingLines);
   }
 
-  __scrollToSelected() {
-    const { selectedItemSurroundingLines } = scroll;
-
+  __scrollToSelected(indexOfElementToBeVisibleInRelationToSelected) {
     const ul = document.querySelector('ul');
 
-    const indexOfElementToBeVisible = this.index - selectedItemSurroundingLines;
+    const indexOfElementToBeVisible = this.index + indexOfElementToBeVisibleInRelationToSelected;
     const min = 0;
     const indexOfElementToScrollTo = Math.max(indexOfElementToBeVisible, min);
 
     const elementToScrollTo = ul.children[indexOfElementToScrollTo];
     if (elementToScrollTo) {
-      elementToScrollTo.scrollIntoView({ behavior: 'smooth' });
+      elementToScrollTo.scrollIntoViewIfNeeded({ behavior: 'smooth' });
     }
   }
 
