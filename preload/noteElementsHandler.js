@@ -14,6 +14,7 @@ class NoteElementsHandler {
   set index(index) {
     this._index = clamp(index, -1, this.texts.length - 1);
     this.__setHTML();
+    this.__scrollTo(this.index);
   }
 
   /** @param {string[]} texts */
