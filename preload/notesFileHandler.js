@@ -2,6 +2,7 @@ const { EOL } = require('os');
 const { FileHandler } = require('../common/FileHandler');
 
 const notesFilePath = `${__dirname}/store/notes.txt`;
+exports.notesFilePath = notesFilePath;
 
 class NotesFileHandler extends FileHandler {
   getNotes() {

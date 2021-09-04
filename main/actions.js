@@ -1,5 +1,6 @@
-const { globalShortcut, screen } = require('electron');
+const { globalShortcut, screen, shell } = require('electron');
 const { shortcutFileHandler: shortcutHandler } = require('./shortcutFileHandler');
+const { notesFilePath } = require('../preload/notesFileHandler');
 
 const { getCursorScreenPoint, getDisplayNearestPoint } = screen;
 
@@ -33,4 +34,8 @@ exports.show = (win) => {
   win.center();
   win.focus();
   win.show();
+};
+
+exports.openNotesFile = () => {
+  shell.openItem(notesFilePath);
 };
