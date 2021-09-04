@@ -4,14 +4,24 @@ const { scroll, listElementId, selectedItemColor, itemColor } = require('./const
 class NoteElementsHandler {
   constructor() {
     this.texts = [];
-    this.index = -1;
+    this._index = -1;
+  }
+
+  get index() {
+    return this._index;
+  }
+
+  set index(index) {
+    this._index = clamp(index, -1, this.texts.length - 1);
+    this.__setHTML();
   }
 
   /** @param {string[]} texts */
   setNoteElements(texts) {
     this.texts = texts;
-    this.index = clamp(this.index, -1, this.texts.length - 1);
-    this.__setHTML();
+    // clamp index to the new length
+    // eslint-disable-next-line no-self-assign
+    this.index = this.index;
   }
 
   __setHTML() {
@@ -29,25 +39,23 @@ class NoteElementsHandler {
   }
 
   down() {
-    this.index = clamp(this.index + 1, -1, this.texts.length - 1);
-    this.__setHTML();
+    this.index++;
 
     const { selectedItemSurroundingLines } = scroll;
-    this.__scrollToSelected(selectedItemSurroundingLines);
+    this.__scrollTo(this.index + selectedItemSurroundingLines);
   }
 
   up() {
-    this.index = clamp(this.index - 1, -1, this.texts.length - 1);
-    this.__setHTML();
+    this.index--;
 
     const { selectedItemSurroundingLines } = scroll;
-    this.__scrollToSelected(-selectedItemSurroundingLines);
+    this.__scrollTo(this.index - selectedItemSurroundingLines);
   }
 
-  __scrollToSelected(indexOfElementToBeVisibleInRelationToSelected) {
+  __scrollTo(index) {
     const ul = document.querySelector('ul');
 
-    const indexOfElementToBeVisible = this.index + indexOfElementToBeVisibleInRelationToSelected;
+    const indexOfElementToBeVisible = index;
     const min = 0;
     const indexOfElementToScrollTo = Math.max(indexOfElementToBeVisible, min);
 
@@ -67,7 +75,6 @@ class NoteElementsHandler {
 
   resetEditState() {
     this.index = -1;
-    this.__setHTML();
   }
 }
 
