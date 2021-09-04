@@ -1,47 +1,79 @@
 const { notesFileHandler } = require('./notesFileHandler');
 const { stateHandler } = require('./stateHandler');
+const { swapArrItems } = require('../common/utils');
 
 class NotesHandler {
+  /** @returns {string[]} notes */
   getNotes() {
     return notesFileHandler.getNotes();
   }
 
   __setNotes(notes) {
     notesFileHandler.setNotes(notes);
-
     stateHandler.setList(notes);
+  }
+
+  /** @param {(notes: string[]) => void} changer */
+  __changeNotes(changer) {
+    const notes = [...this.getNotes()];
+    changer(notes);
+    this.__setNotes(notes);
+  }
+
+  __isIndexOutOfBounds(index) {
+    return index < 0 || index >= this.getNotes().length;
   }
 
   addNote() {
     if (!stateHandler.isEditing) {
       return;
     }
-    const note = stateHandler.currentNote;
 
-    const newNotes = [...this.getNotes(), note];
-    this.__setNotes(newNotes);
+    this.__changeNotes((notes) => {
+      const note = stateHandler.currentNote;
+
+      if (stateHandler.selectionActive) {
+        this.__insertAfterSelection(notes, note);
+      } else {
+        this.__insertAtBottom(notes, note);
+      }
+    });
+
     stateHandler.resetNote();
+  }
+
+  /** @param {string[]} notes */
+  /** @param {string} note */
+  __insertAtBottom(notes, note) {
+    notes.push(note);
+  }
+
+  /** @param {string[]} notes */
+  /** @param {string} note */
+  __insertAfterSelection(notes, note) {
+    const indexOfNewNote = stateHandler.selectedIndex + 1;
+    notes.splice(indexOfNewNote, 0, note);
   }
 
   removeNote() {
     if (stateHandler.selectionActive) {
       const index = stateHandler.selectedIndex;
-      const newNotes = this.getNotes().filter((_note, i) => i !== index);
-      this.__setNotes(newNotes);
+      this.__changeNotes((notes) => {
+        notes.splice(index, 1);
+      });
     }
   }
 
   __moveNote(direction) {
     if (stateHandler.selectionActive) {
-      const oldIndex = stateHandler.selectedIndex;
-      const newNotes = [...this.getNotes()];
-      const newIndex = oldIndex + direction;
-      if (newIndex < 0 || newIndex >= newNotes.length) {
+      const fromIndex = stateHandler.selectedIndex;
+      const toIndex = fromIndex + direction;
+      if (this.__isIndexOutOfBounds(toIndex)) {
         return false;
       }
-      const note = newNotes[oldIndex];
-      [newNotes[oldIndex], newNotes[newIndex]] = [newNotes[newIndex], note];
-      this.__setNotes(newNotes);
+      this.__changeNotes((notes) => {
+        swapArrItems(notes, fromIndex, toIndex);
+      });
 
       return true;
     }
@@ -57,9 +89,11 @@ class NotesHandler {
 
   duplicateNote() {
     if (stateHandler.selectionActive) {
-      const newNotes = this.getNotes();
-      newNotes.splice(stateHandler.selectedIndex, 0, newNotes[stateHandler.selectedIndex]);
-      this.__setNotes(newNotes);
+      this.__changeNotes((notes) => {
+        const index = stateHandler.selectedIndex;
+        const selectedNote = notes[index];
+        notes.splice(index, 0, selectedNote);
+      });
     }
   }
 }
