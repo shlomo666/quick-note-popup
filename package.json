@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-packager . --icon=\"./app_icon.icns\" --overwrite --out=build",
+    "buildWin32": "electron-packager . --icon=\"./app_icon.icns\" --overwrite --out=build --platform=win32 --arch=x64",
     "lint": "eslint *.js",
     "lint-fix": "eslint --fix *.js"
   },
