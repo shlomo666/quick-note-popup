@@ -17,7 +17,7 @@ function createWindow() {
     show: false
   });
 
-  app.dock.hide();
+  app.dock?.hide();
   mainWindow.setAlwaysOnTop(true, 'floating');
   mainWindow.setVisibleOnAllWorkspaces(true);
   mainWindow.setFullScreenable(false);
