@@ -27,6 +27,7 @@ function createWindow() {
     actions.show(mainWindow);
   }, 1000);
 
+  mainWindow.on('blur', () => actions.hide(mainWindow));
   ipcMain.on('hide', () => actions.hide(mainWindow));
 
   mainWindow.loadFile('index.html');
