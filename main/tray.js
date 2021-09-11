@@ -1,7 +1,7 @@
 const path = require('path');
 const { Tray, Menu, app } = require('electron');
 
-const { openNotesFile } = require('./actions');
+const { openNotesFile, show } = require('./actions');
 const { shortcutFileHandler: shortcutHandler } = require('./shortcutFileHandler');
 
 const appDir = path.dirname(require.main.filename);
@@ -10,7 +10,8 @@ const { productName } = packageJson;
 
 /** @type {Electron.Tray} */
 let tray;
-exports.setTray = () => {
+/** @param {Electron.BrowserWindow} win */
+exports.setTray = (win) => {
   if (!tray) {
     tray = new Tray(appDir + '/menu_bar_icon.png');
   }
@@ -19,14 +20,23 @@ exports.setTray = () => {
   tray.setContextMenu(
     Menu.buildFromTemplate([
       {
+        label: 'Show',
+        click: () => show(win)
+      },
+      {
         label: 'Shortcut',
         submenu: Menu.buildFromTemplate(
-          ['alt+1', 'alt+q', 'alt+t'].map((key) => ({ label: key, click: () => shortcutHandler.setValue(key), type: 'radio', checked: key === shortcut }))
+          ['alt+1', 'alt+q', 'alt+t'].map((key) => ({
+            label: key,
+            click: () => shortcutHandler.setValue(key),
+            type: 'radio',
+            checked: key === shortcut
+          }))
         )
       },
       {
         label: 'Open Notes File',
-        click: () => openNotesFile()
+        click: openNotesFile
       },
       {
         label: 'Quit',

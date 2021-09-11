@@ -21,7 +21,7 @@ function createWindow() {
   mainWindow.setAlwaysOnTop(true, 'floating');
   mainWindow.setVisibleOnAllWorkspaces(true);
   mainWindow.setFullScreenable(false);
-  tray.setTray();
+  tray.setTray(mainWindow);
 
   setTimeout(() => {
     actions.show(mainWindow);
