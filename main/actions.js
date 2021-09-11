@@ -16,7 +16,7 @@ shortcutHandler.onValueChanged = ({ value, oldValue }) => {
 /** @param {Electron.BrowserWindow} win */
 exports.hide = (win) => {
   win.hide();
-  app.hide();
+  app.hide?.();
 
   registeredCallback = () => {
     exports.show(win);
