@@ -1,4 +1,4 @@
-const { globalShortcut, screen, shell } = require('electron');
+const { globalShortcut, screen, shell, app } = require('electron');
 const { shortcutFileHandler: shortcutHandler } = require('./shortcutFileHandler');
 const { notesFilePath } = require('../preload/notesFileHandler');
 
@@ -16,6 +16,7 @@ shortcutHandler.onValueChanged = ({ value, oldValue }) => {
 /** @param {Electron.BrowserWindow} win */
 exports.hide = (win) => {
   win.hide();
+  app.hide();
 
   registeredCallback = () => {
     exports.show(win);
