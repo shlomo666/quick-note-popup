@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // No Node.js APIs are available in this process because
@@ -7,4 +5,5 @@
 // selectively enable features needed in the rendering
 // process.
 
+/* eslint-disable no-undef */
 new ScrollbarsAutoHideAndShower({ elementId: 'listElement', showOnEnter: true, scrollbars: { colorRGB: '70, 130, 180' } }).autoHideAndShowScrollbars();

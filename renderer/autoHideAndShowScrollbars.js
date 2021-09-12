@@ -1,5 +1,6 @@
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
 class ScrollbarsAutoHideAndShower {
   static pseudElementId = '-webkit-scrollbar-thumb';
 
@@ -26,7 +27,7 @@ class ScrollbarsAutoHideAndShower {
 
     this.taskIdCounter = 0;
     this.percent = 0;
-    this.timeout;
+    this.timeout = null;
     this.fadeInInProgress = false;
   }
 
