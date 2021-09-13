@@ -2,7 +2,9 @@
 
 // eslint-disable-next-line no-unused-vars
 class ScrollbarsAutoHideAndShower {
-  static pseudElementId = '-webkit-scrollbar-thumb';
+  static scrollbarsContainerPseudElementId = '-webkit-scrollbar';
+  static cornerPseudElementId = '-webkit-scrollbar-corner';
+  static scrollbarsPseudElementId = '-webkit-scrollbar-thumb';
 
   constructor({
     elementId,
@@ -23,18 +25,24 @@ class ScrollbarsAutoHideAndShower {
     this.scrollbarsHeight = scrollbarsHeight;
     this.scrollbarsBorderRadius = scrollbarsBorderRadius;
 
-    this.rule = this.__createCSSRules();
+    this.dynamicRule = this.__createCSSRules();
 
     this.taskIdCounter = 0;
-    this.percent = 0;
+    this.scrollbarsOpacity = 0;
     this.timeout = null;
-    this.fadeInInProgress = false;
+    this.isFadingIn = false;
   }
 
   __createCSSRules() {
     const sheet = document.styleSheets[0];
     this.__addStaticScrollbarsCSSRules(sheet);
-    const ruleIdx = sheet.insertRule(`#${this.elementId}::${ScrollbarsAutoHideAndShower.pseudElementId} {}`, sheet.cssRules.length);
+    const dynamicRule = this.addDynamicRule(sheet);
+    return dynamicRule;
+  }
+
+  /** @param {CSSStyleSheet} sheet */
+  addDynamicRule(sheet) {
+    const ruleIdx = sheet.insertRule(`#${this.elementId}::${ScrollbarsAutoHideAndShower.scrollbarsPseudElementId} {}`, sheet.cssRules.length);
     return sheet.cssRules[ruleIdx];
   }
 
@@ -50,7 +58,7 @@ class ScrollbarsAutoHideAndShower {
     );
     sheet.insertRule(
       `
-      #${this.elementId}::-webkit-scrollbar {
+      #${this.elementId}::${ScrollbarsAutoHideAndShower.scrollbarsContainerPseudElementId} {
         background: transparent;
         width: ${this.scrollbarsWidth};
         height: ${this.scrollbarsHeight};
@@ -60,7 +68,7 @@ class ScrollbarsAutoHideAndShower {
     );
     sheet.insertRule(
       `
-      #${this.elementId}::-webkit-scrollbar-corner {
+      #${this.elementId}::${ScrollbarsAutoHideAndShower.cornerPseudElementId} {
         background: transparent;
       }
     `,
@@ -68,7 +76,7 @@ class ScrollbarsAutoHideAndShower {
     );
     sheet.insertRule(
       `
-      #${this.elementId}::-webkit-scrollbar-thumb {
+      #${this.elementId}::${ScrollbarsAutoHideAndShower.scrollbarsPseudElementId} {
         background: transparent;
         border-radius: ${this.scrollbarsBorderRadius};
       }
@@ -84,8 +92,8 @@ class ScrollbarsAutoHideAndShower {
   __showScrollbars() {
     const taskId = ++this.taskIdCounter;
 
-    if (!this.fadeInInProgress && this.percent < 1) {
-      this.fadeInInProgress = true;
+    if (!this.isFadingIn && this.scrollbarsOpacity < 1) {
+      this.isFadingIn = true;
       const startMS = Date.now();
       this.__fadeIn(startMS);
     }
@@ -99,27 +107,33 @@ class ScrollbarsAutoHideAndShower {
 
   __fadeIn(startMS) {
     requestAnimationFrame(() => {
-      this.percent = (Date.now() - startMS) / this.fadeInMS;
-      if (this.percent >= 1) {
-        this.percent = 1;
+      const msSinceStartedFadeIn = Date.now() - startMS;
+      const fadeInProgress = msSinceStartedFadeIn / this.fadeInMS;
+      this.scrollbarsOpacity = fadeInProgress;
+      const completed = this.scrollbarsOpacity >= 1;
+      if (completed) {
+        this.scrollbarsOpacity = 1;
+        this.isFadingIn = false;
       }
       this.__attachStyleByPercent();
-      if (this.percent < 1) {
+      if (!completed) {
         this.__fadeIn(startMS);
-      } else {
-        this.fadeInInProgress = false;
       }
     });
   }
 
   __fadeOut(startMS, taskId) {
     requestAnimationFrame(() => {
-      this.percent = 1 - (Date.now() - startMS) / this.fadeOutMS;
-      if (this.percent <= 0) {
-        this.percent = 0;
+      const msSinceStartedFadeOut = Date.now() - startMS;
+      const fadeOutProgress = msSinceStartedFadeOut / this.fadeOutMS;
+      this.scrollbarsOpacity = 1 - fadeOutProgress;
+      const completed = this.scrollbarsOpacity <= 0;
+      if (completed) {
+        this.scrollbarsOpacity = 0;
       }
       this.__attachStyleByPercent();
-      if (this.percent > 0 && taskId === this.taskIdCounter) {
+      const isLatestFadeOutTask = taskId === this.taskIdCounter;
+      if (!completed && isLatestFadeOutTask) {
         this.__fadeOut(startMS, taskId);
       }
     });
@@ -133,12 +147,12 @@ class ScrollbarsAutoHideAndShower {
   }
 
   __attachStyleByPercent() {
-    const obj = this.__getStyle(this.percent);
-    Object.assign(this.rule.style, obj);
+    const obj = this.__getStyle(this.scrollbarsOpacity);
+    Object.assign(this.dynamicRule.style, obj);
   }
 
-  __getStyle(percent) {
-    const background = `rgba(${this.scrollbarsColorRGB}, ${percent})`;
+  __getStyle(opacity) {
+    const background = `rgba(${this.scrollbarsColorRGB}, ${opacity})`;
     return {
       background,
       border: `1px solid ${background}`
