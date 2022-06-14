@@ -2,6 +2,8 @@ const { notesHandler } = require('./notesHandler');
 const { stateHandler } = require('./stateHandler');
 
 function setupEventListeners() {
+  let lastCharWasJustDeleted = false;
+
   /** @type {Record<keyof HTMLElementEventMap, Record<string, (event: KeyboardEvent) => void>>} */
   const eventsMap = {
     keyup: {
@@ -13,7 +15,12 @@ function setupEventListeners() {
         }
       },
       Escape: () => stateHandler.hide(),
-      Backspace: () => notesHandler.removeNote()
+      Backspace: () => {
+        if (!stateHandler.isEditing && !lastCharWasJustDeleted) {
+          notesHandler.removeNote();
+        }
+        lastCharWasJustDeleted = false;
+      }
     },
     keydown: {
       ArrowUp: (event) => {
@@ -47,8 +54,8 @@ function setupEventListeners() {
         }
       },
       Backspace: (event) => {
-        if (stateHandler.selectionActive) {
-          event.preventDefault();
+        if (stateHandler.currentNote.length === 1) {
+          lastCharWasJustDeleted = true;
         }
       }
     }
